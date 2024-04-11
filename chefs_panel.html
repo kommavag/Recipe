@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="chefs-panel.css">
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap">
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <title>Admin Panel</title>
+</head>
+
+<body>
+    <div class="admin-container">
+        <div class="action-buttons">
+            <button onclick="logout()">Logout</button>
+        </div>
+        <h1 class="admin-title">Add Recipe</h1>
+        <form class="add-recipe-form" enctype="multipart/form-data">
+            <div class="form-group">
+                <label for="recipeName">Recipe Name:</label>
+                <input type="text" id="recipeName" name="name" placeholder="Enter recipe name" required>
+            </div>
+
+            <div class="form-group">
+                <label for="recipeDescription">Recipe Description:</label>
+                <textarea id="recipeDescription" placeholder="Enter recipe description" rows="4" required></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="recipeImage">Recipe Image:</label>
+                <input type="file" id="recipeImage" name="recipeImage" accept="image/*" required>
+            </div>
+
+            <div class="form-group">
+                <label for="recipeCategory">Recipe Category:</label>
+                <input type="text" id="recipeCategory" placeholder="Enter recipe category" required>
+            </div>
+
+            <div class="form-group">
+                <label for="recipeLocation">Recipe Location:</label>
+                <input type="text" id="recipeLocation" placeholder="Enter recipe location" required>
+            </div>
+            <div id="errorContainer" class="error-container"></div>
+            <button type="button" onclick="addRecipe()">Add Recipe</button>
+        </form>
+    </div>
+
+    <script src="recipe_script.js"></script>
+</body>
+
+</html>

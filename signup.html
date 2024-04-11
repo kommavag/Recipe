@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="signup.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <title>Cooking and Recipes - Sign Up</title>
+</head>
+
+<body>
+    <div class="container">
+        <h1>SIGN UP</h1>
+        <form id="signupForm" action="Server/register.php" method="POST">
+            <label for="username">Username</label>
+            <input type="text" id="username" name="username" placeholder="Enter your username" required>
+
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password" placeholder="Enter your password" required>
+
+            <label for="confirmPassword">Confirm Password</label>
+            <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Confirm your password"
+                required>
+
+            <div class="role-container">
+                <label>Role</label>
+                <input type="radio" id="roleRecipeSeeker" name="role" value="recipe_seeker" checked>
+                <label for="roleRecipeSeeker">Recipe Seeker</label>
+
+                <input type="radio" id="roleCook" name="role" value="cook">
+                <label for="roleCook">Cook</label>
+            </div>
+
+            <div id="errorContainer" class="error-container"></div>
+
+            <button type="button" onclick="handleSignUp()">Sign Up</button>
+        </form>
+        <p>Already have an account? <a href="signin.html">Log In</a></p>
+    </div>
+
+    <script src="recipe_script.js"></script>
+</body>
+
+</html>

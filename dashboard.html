@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="dashboard.css">
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script src="recipe_script.js"></script>
+    <title>Cooking and Recipes - Recipes</title>
+</head>
+
+<body>
+    <div class="container">
+
+        <div class="header">
+            <!-- <div class="logo">
+                <h1>Cooking & Recipes</h1>
+            </div> -->
+            <div class="menu">
+                <button id="adminPanelButton" onclick="handleAdminPanel()">Chef's Panel</button>
+                <button onclick="logout()">Logout</button>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <h2>Delicious Recipes</h2>
+            <div class="filter-bar">
+                <div style="display: none;">
+                <label for="category">Filter by Category:</label>
+                <select id="category" onchange="filterRecipes()">
+                </select>
+            </div>
+                <label for="locationFilter">View By Location:</label>
+                <select id="locationFilter" onchange="filterRecipes()">
+                </select>
+            </div>
+
+            <div id='recipeContainer' class="recipe-cards">
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Assuming you have a container div in your HTML with id "recipeContainer"
+        const recipeContainer = document.getElementById('recipeContainer');
+
+        if (localStorage.getItem('userRole') !== 'cook') {
+            document.getElementById(
+                'adminPanelButton'
+            ).style.display = 'none';
+        }
+
+        let recipesData = [];
+
+        let uniqueCategories = [];
+        let uniqueLocations = [];
+
+        // Function to fetch recipes from the API
+        function fetchRecipes() {
+            $.ajax({
+                type: 'GET',
+                url: 'Server/getRecipes.php',
+                dataType: 'json',
+                success: function (recipes) {
+
+                    recipesData = recipes;
+
+                    // Extract unique categories and locations
+                    uniqueCategories = [...new Set(recipes.map(recipe => recipe.category))];
+                    uniqueLocations = [...new Set(recipes.map(recipe => recipe.location))];
+
+                    // Call a function to render recipe cards with the received data
+                    renderRecipeCards(recipes, localStorage.getItem('userRole'));
+
+                    // Populate filter dropdowns with unique categories and locations
+                    populateFilterDropdown('category', uniqueCategories);
+                    populateFilterDropdown('locationFilter', uniqueLocations);
+                },
+                error: function (error) {
+                    console.log(error);
+                },
+            });
+        }
+
+        // Function to populate filter dropdown with options
+        function populateFilterDropdown(dropdownId, options) {
+            const dropdown = document.getElementById(dropdownId);
+
+            // Clear existing options
+            dropdown.innerHTML = '';
+
+            // Add default option
+            const defaultOption = document.createElement('option');
+            defaultOption.value = 'all';
+            defaultOption.textContent = 'All';
+            dropdown.appendChild(defaultOption);
+
+            // Add options based on the array
+            options.forEach(optionValue => {
+                const option = document.createElement('option');
+                option.value = optionValue.toLowerCase();
+                option.textContent = optionValue;
+                dropdown.appendChild(option);
+            });
+        }
+
+        // Function to render recipe cards
+        function renderRecipeCards(recipes, userRole) {
+            // Clear existing content in the container
+            recipeContainer.innerHTML = '';
+
+            if (recipes.length === 0) {
+                const noRecipesMessage = document.createElement('p');
+                noRecipesMessage.classList.add('error-container');
+                noRecipesMessage.textContent = 'No recipes added yet.';
+                recipeContainer.appendChild(noRecipesMessage);
+                return;
+            }
+
+            // Loop through each recipe in the data and create a card for it
+            recipes.forEach(recipe => {
+                const card = document.createElement('div');
+                card.classList.add('recipe-card');
+                card.id = `recipe-${recipe.id}`;
+                const image = document.createElement('img');
+                image.src = `data:image/jpeg;base64,${recipe.image}`;
+                image.alt = recipe.name;
+
+                const title = document.createElement('h2');
+                title.textContent = recipe.name;
+
+                const description = document.createElement('p');
+                description.textContent = recipe.description;
+
+                const category = document.createElement('p');
+                category.innerHTML = `<strong>Category:</strong> ${recipe.category}`;
+
+                const location = document.createElement('p');
+                location.innerHTML = `<strong>Location:</strong> ${recipe.location}`;
+
+                // Append image, title, description, category, and location to the card
+                card.appendChild(image);
+                card.appendChild(title);
+                card.appendChild(description);
+                card.appendChild(category);
+                card.appendChild(location);
+
+                // Show delete button only for admins
+                if (userRole === 'cook') {
+                    const deleteButton = document.createElement('button');
+                    deleteButton.textContent = 'Delete Recipe';
+                    deleteButton.onclick = function () {
+                        deleteRecipe(recipe.id);
+                    };
+                    card.appendChild(deleteButton);
+                }
+
+                // Append the card to the recipe container
+                recipeContainer.appendChild(card);
+            });
+        }
+
+        function filterRecipes() {
+            const selectedCategory = document.getElementById('category').value;
+            const selectedLocation = document.getElementById('locationFilter').value;
+
+            // Filter recipes based on selected category and location
+            const filteredRecipes = recipesData.filter(recipe => {
+                const categoryMatch = selectedCategory === 'all' || recipe.category.toLowerCase() === selectedCategory;
+                const locationMatch = selectedLocation === 'all' || recipe.location.toLowerCase() === selectedLocation;
+
+                return categoryMatch && locationMatch;
+            });
+
+            // Call the renderRecipeCards function with the filtered recipes
+            renderRecipeCards(filteredRecipes, localStorage.getItem('userRole'));
+        }
+
+        // Call the fetchRecipes function when the page loads
+        window.onload = fetchRecipes;
+    </script>
+</body>
+
+</html>
